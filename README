@@ -1,0 +1,11 @@
+# Switch to day 1, and run it
+cd day01
+cargo +nightly run --release
+
+# or run everything in parallel
+cd ../runner
+cargo +nightly run --release --bin runner-par
+
+# or benchmark every day
+cd ../runner
+cargo +nightly run --release --bin bench
