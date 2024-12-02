@@ -9,5 +9,5 @@ pub fn main() {
     star2::star2();
     //println! {"oneliner in order:"}
     oneline::oneline();
-    println! {""}
+    println! {}
 }
