@@ -1,0 +1,1 @@
+pub fn star2() {println!("{}",include_str!("data.in").split("do()").map(|d| {regex::Regex::new(r"mul\(([0-9]*),([0-9]*)\)").unwrap().captures_iter(d.split_once("don't()").unwrap_or((d, "")).0).map(|c| c.extract()).map(|(_, [f1, f2])| {f1.parse::<usize>().unwrap() * f2.parse::<usize>().unwrap()}).sum::<usize>()}).sum::<usize>());}
