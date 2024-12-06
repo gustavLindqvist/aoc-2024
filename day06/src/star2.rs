@@ -14,41 +14,40 @@ pub fn star2() {
         }
     }
     let mut res = 0;
-    let mut possible = HashSet::new();
-    possible.insert((0,0));
+    let mut possible = vec![vec![1]];
     for y in 0..grid.len() {
         for x in 0..grid[0].len() {
-            if !possible.contains(&(y,x)){
+            if possible[y][x] == 0 {
                 continue;
             }
             let mut pos = start;
-            let mut dir = (-1, 0);
-            let mut visited = HashSet::new();
-
+            let mut dir = 0;
+            let mut visited: Vec<Vec<u8>> = vec![vec![0; grid[0].len()]; grid.len()];
             loop {
-                visited.insert((pos, dir));
+                visited[pos.0][pos.1] += 1 << dir;
 
-                let next_pos = (
-                    (pos.0 as i64 + dir.0) as usize,
-                    (pos.1 as i64 + dir.1) as usize,
-                );
+                let next_pos = match dir {
+                    0 => (pos.0.wrapping_sub(1), pos.1),
+                    1 => (pos.0, pos.1 + 1),
+                    2 => (pos.0 + 1, pos.1),
+                    3 => (pos.0, pos.1.wrapping_sub(1)),
+                    _ => unreachable!(),
+                };
+
                 if next_pos.0 >= grid.len() || next_pos.1 >= grid[0].len() {
                     break;
                 }
                 if grid[next_pos.0][next_pos.1] == '#' || next_pos == (y, x) {
-                    dir = (dir.1, -dir.0);
+                    dir = (dir + 1) % 4;
                 } else {
-                    if visited.contains(&(next_pos, dir)){
+                    if visited[next_pos.0][next_pos.1] & 1 << dir != 0{
                         res += 1;
                         break;
                     }
-                    pos = next_pos;
-                }
+                    pos = next_pos;                }
             }
-            if (y, x) == (0,0){
-                for (p, _) in visited{
-                    possible.insert(p);
-                }
+            if (y, x) == (0, 0) {
+                possible = visited;
             }
         }
     }
