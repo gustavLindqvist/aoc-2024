@@ -1,4 +1,3 @@
-use std::collections::HashSet;
 pub fn star1() {
     let grid: Vec<Vec<_>> = include_str!("data.in")
         .lines()
