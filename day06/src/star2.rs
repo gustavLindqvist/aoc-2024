@@ -1,3 +1,4 @@
+use rayon::prelude::*;
 pub fn star2() {
     let mut grid: Vec<Vec<_>> = include_str!("data.in")
         .lines()
@@ -14,10 +15,9 @@ pub fn star2() {
         .unwrap();
 
     let mut tested: Vec<Vec<_>> = vec![vec![false; grid[0].len()]; grid.len()];
-    let mut res = 0;
     let mut pos = start;
     let mut dir = 0;
-
+    let mut work_items = vec![];
     loop {
         let next_pos = next(pos, dir);
         if next_pos.0 >= grid.len() || next_pos.1 >= grid[0].len() {
@@ -28,17 +28,17 @@ pub fn star2() {
         } else {
             if !tested[next_pos.0][next_pos.1] {
                 tested[next_pos.0][next_pos.1] = true;
-                grid[next_pos.0][next_pos.1] = b'#';
-                res += loops(&grid, pos, (dir + 1) % 4);
-                grid[next_pos.0][next_pos.1] = b'.';
+                work_items.push((&grid, pos, (dir + 1) % 4, next_pos));
+                // res += loops(&grid, pos, (dir + 1) % 4, next_pos);
             }
             pos = next_pos;
         }
     }
+    let res: u32 = work_items.par_iter().map(|(g,p,d,b)|loops(g,*p,*d,*b)).sum();
     println!("{}", res);
 }
 
-fn loops(grid: &[Vec<u8>], mut pos: (usize, usize), mut dir: u8) -> u32 {
+fn loops(grid: &[Vec<u8>], mut pos: (usize, usize), mut dir: u8, block: (usize, usize)) -> u32 {
     let mut visited: Vec<Vec<u8>> = vec![vec![0; grid[0].len()]; grid.len()];
     visited[pos.0][pos.1] += 1 << ((dir + 3) % 4);
     loop {
@@ -49,7 +49,7 @@ fn loops(grid: &[Vec<u8>], mut pos: (usize, usize), mut dir: u8) -> u32 {
         if next_pos.0 >= grid.len() || next_pos.1 >= grid[0].len() {
             return 0;
         }
-        if grid[next_pos.0][next_pos.1] == b'#' {
+        if grid[next_pos.0][next_pos.1] == b'#' || next_pos == block {
             dir = (dir + 1) % 4;
         } else {
             if visited[next_pos.0][next_pos.1] & 1 << dir != 0 {
