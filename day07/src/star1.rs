@@ -4,14 +4,26 @@ pub fn star1() {
         .map(|l| l.split_once(":").unwrap());
     let mut acc = 0;
     for (res, nums) in lines {
-        let res = res.parse::<usize>().unwrap();
-        let mut nums = nums.split_whitespace().map(|n| n.parse::<usize>().unwrap());
-        let found = nums.fold(vec![0], |v, n| {
-            v.iter().flat_map(|e| [e * n, e + n]).collect()
-        });
-        if found.contains(&res) {
+        let res = res.parse::<i64>().unwrap();
+        let par: Vec<_> = nums
+            .split_whitespace()
+            .map(|n| n.parse::<i64>().unwrap())
+            .collect();
+        if rec(res, &par) {
             acc += res;
         }
     }
     println!("{}", acc);
+}
+
+fn rec(target: i64, nums: &[i64]) -> bool {
+    if target < 0 {
+        return false;
+    }
+    if nums.is_empty() {
+        return target == 0;
+    }
+    let x = nums[nums.len() - 1];
+    (target % x == 0 && rec(target / x, &nums[..nums.len() - 1]))
+        || rec(target - x, &nums[..nums.len() - 1])
 }
