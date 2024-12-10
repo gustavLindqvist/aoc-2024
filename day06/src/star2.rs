@@ -1,6 +1,6 @@
 use rayon::prelude::*;
 pub fn star2() {
-    let mut grid: Vec<Vec<_>> = include_str!("data.in")
+    let grid: Vec<Vec<_>> = include_str!("data.in")
         .lines()
         .map(|l| l.bytes().collect())
         .collect();
@@ -29,7 +29,6 @@ pub fn star2() {
             if !tested[next_pos.0][next_pos.1] {
                 tested[next_pos.0][next_pos.1] = true;
                 work_items.push((&grid, pos, (dir + 1) % 4, next_pos));
-                // res += loops(&grid, pos, (dir + 1) % 4, next_pos);
             }
             pos = next_pos;
         }
