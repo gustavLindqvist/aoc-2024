@@ -1,50 +1,48 @@
+use std::collections::BinaryHeap;
 pub fn star2() {
-    let data: Vec<_> = include_str!("data.in")
+    let disk: Vec<_> = include_str!("data.in")
         .bytes()
-        .map(|u| (u - b'0') as usize)
+        .map(|b| (b - b'0') as usize)
         .collect();
-    let mut disc: Vec<(usize, usize)> = data
-        .windows(2)
-        .step_by(2)
-        .enumerate()
-        .flat_map(|(i, v)| [(i, v[0]), (usize::MAX, v[1])])
-        .collect();
-    disc.push((data.len() / 2, data[data.len() - 1]));
+    let mut b = 0;
+    let mut free: Vec<_> = (0..10).map(|_| BinaryHeap::new()).collect();
+    let triangle = [0, 0, 1, 3, 6, 10, 15, 21, 28, 36];
+    let mut res = 0;
 
-    'outer: for index in (0..disc.len()).rev() {
-        if disc[index].0 != usize::MAX {
-            for free in 0..disc.len() {
-                if index <= free {
-                    continue;
-                }
-                let sb = disc[index].1;
-                let sf = disc[free].1;
-                if (disc[free].0 == usize::MAX) && (sf >= sb) {
-                    if sf == sb {
-                        disc.swap(index, free);
-                    } else {
-                        let sd = sf - sb;
-                        let tmp = (usize::MAX, sd);
-                        disc[free] = disc[index];
-                        disc[index] = (usize::MAX, sb);
-                        disc.insert(free + 1, tmp);
-                    }
-                    continue 'outer;
+
+    for (index, &size) in disk.iter().enumerate() {
+        if index % 2 == 1 && size > 0 {
+            free[size].push(-b);
+        }
+        b += size as i64;
+    }
+
+    for (index, &size) in disk.iter().enumerate().rev() {
+        b -= size as i64;
+        if index % 2 == 1 {
+            continue;
+        }
+
+        let mut next_b = b as usize;
+        let mut next_index = usize::MAX;
+
+        for (i,b) in free.iter().enumerate().skip(size) {
+            if let Some(&first) = b.peek() {
+                if ((-first) as usize) < next_b {
+                    next_b = (-first) as usize;
+                    next_index = i;
                 }
             }
         }
-    }
-    let mut bit_disc: Vec<usize> = vec![];
-    for (v, t) in disc {
-        if v != usize::MAX {
-            bit_disc.append(vec![v; t].as_mut());
-        } else {
-            bit_disc.append(vec![0; t].as_mut());
+
+        if next_index != usize::MAX {
+            free[next_index].pop();
+            if size < next_index {
+                free[next_index - size].push(-((next_b + size)as i64));
+            }
         }
+        res += (index / 2) * (next_b * size + triangle[size]);
     }
-    let res = bit_disc
-        .iter()
-        .enumerate()
-        .fold(0, |sum, (i, v)| sum + i * v);
+
     println!("{}", res);
 }
