@@ -5,7 +5,7 @@ pub fn star2() {
         .split_whitespace()
         .map(|u| (u.parse::<usize>().unwrap(), 1))
         .collect();
-    for i in 0..75 {
+    for _ in 0..75 {
         let mut new: HashMap<usize, usize> = HashMap::new();
         for (n, count) in nums {
             let digits = (n as f64).log10().floor() as u32 + 1;
