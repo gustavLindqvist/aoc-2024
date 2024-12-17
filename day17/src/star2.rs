@@ -1,6 +1,6 @@
 pub fn star2() {
     let re = regex::Regex::new(r"[^0-9]+").unwrap();
-    let input = re.split(include_str!("test1.in")).skip(4);
+    let input = re.split(include_str!("data.in")).skip(4);
     let program = input
         .map(|w| w.parse::<usize>().unwrap())
         .collect::<Vec<_>>();

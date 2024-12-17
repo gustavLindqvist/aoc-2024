@@ -1,6 +1,6 @@
 pub fn star1() {
     let re = regex::Regex::new(r"[^0-9]+").unwrap();
-    let mut input = re.split(include_str!("test1.in")).skip(1);
+    let mut input = re.split(include_str!("data.in")).skip(1);
     let mut registers = [0, 1, 2, 3, 0, 0, 0];
     registers[4] = input.next().unwrap().parse::<usize>().unwrap();
     registers[5] = input.next().unwrap().parse::<usize>().unwrap();
