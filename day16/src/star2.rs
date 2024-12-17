@@ -36,18 +36,19 @@ pub fn star2() {
     }
     println!("{}", paths.len());
 }
+type State = ((usize, usize), u8);
 
 fn dijkstra(
     grid: &[Vec<char>],
     start: (usize, usize),
     start_dir: u8,
 ) -> (
-    HashMap<((usize, usize), u8), usize>,
-    HashMap<((usize, usize), u8), Vec<((usize, usize), u8)>>,
+    HashMap<State, usize>,
+    HashMap<State, Vec<State>>,
 ) {
     let mut q = BinaryHeap::new();
     let mut dist = HashMap::new();
-    let mut parents: HashMap<((usize, usize), u8), Vec<((usize, usize), u8)>> = HashMap::new();
+    let mut parents: HashMap<State, Vec<State>> = HashMap::new();
 
     q.push(Reverse((0, start, start_dir)));
     dist.insert((start, start_dir), 0);
