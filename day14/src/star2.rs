@@ -1,6 +1,8 @@
+use rayon::prelude::*;
+const N: i64 = 101;
+const M: i64 = 103;
+
 pub fn star2() {
-    let n = 101;
-    let m = 103;
     let re = regex::Regex::new(r"[^\-0-9]+").unwrap();
     let robots: Vec<_> = include_str!("data.in")
         .lines()
@@ -12,29 +14,23 @@ pub fn star2() {
         })
         .map(|v| ((v[0], v[1]), (v[2], v[3])))
         .collect();
-    // Hella ugly men jag är för bakis
-    'outer: for t in 0..n * m {
-        let mut v = std::collections::HashSet::new();
-        for ((x, y), (dx, dy)) in robots.clone() {
-            let x = (x + t * dx.rem_euclid(n)) % n;
-            let y = (y + t * dy.rem_euclid(m)) % m;
-            if v.contains(&(y * n + x)) {
-                continue 'outer;
-            } else {
-                v.insert(y * n + x);
-            }
+    let res = (0..(N * M))
+        .par_bridge()
+        .find_any(|t| inner(robots.clone(), *t))
+        .unwrap();
+    println!("{}", res);
+}
+
+fn inner(robots: Vec<((i64, i64), (i64, i64))>, t: i64) -> bool {
+    let mut v = std::collections::HashSet::new();
+    for ((x, y), (dx, dy)) in robots {
+        let x = (x + t * dx.rem_euclid(N)) % N;
+        let y = (y + t * dy.rem_euclid(M)) % M;
+        if v.contains(&(y * N + x)) {
+            return false;
+        } else {
+            v.insert(y * N + x);
         }
-        println!("{}", t);
-        return;
-        // for y in 0..m {
-        //     for x in 0..n {
-        //         if v.contains(&(y, x)) {
-        //             print!("#");
-        //         } else {
-        //             print!(".")
-        //         }
-        //     }
-        //     println!();
-        // }
     }
+    true
 }
