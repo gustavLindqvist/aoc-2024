@@ -21,9 +21,6 @@ pub fn star1() {
             res = time;
             break;
         }
-        if visited[pos.0][pos.1] {
-            continue;
-        }
         visited[pos.0][pos.1] = true;
         for next in [
             (pos.0, pos.1 + 1),
@@ -31,23 +28,10 @@ pub fn star1() {
             (pos.0, pos.1.wrapping_sub(1)),
             (pos.0.wrapping_sub(1), pos.1),
         ] {
-            if (next.0 <= N) && (next.1 <= N) && !stones[..t].contains(&(next)) {
+            if (next.0 <= N) && (next.1 <= N) && !stones[..t].contains(&(next)) && !visited[pos.0][pos.1]{
                 q.push_back((next, time + 1));
             }
         }
     }
-    // for y in 0..=N{
-    //     for x in 0..=N{
-    //         if visited[y][x]{
-    //             print!("O");
-    //         }
-    //         else if stones[..t].contains(&(y,x)){
-    //             print!("#");
-    //         } else {
-    //             print!(".");
-    //         }
-    //     }
-    //     println!();
-    // }
     println!("{}", res);
 }

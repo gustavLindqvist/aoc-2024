@@ -11,44 +11,45 @@ pub fn star2() {
         })
         .map(|v| (v[0], v[1]))
         .collect();
-    let mut t = 1024.min(stones.len());
-    loop {
-        let mut q = VecDeque::new();
-        q.push_back(((0, 0), vec![]));
-        let mut visited = [[false; N + 1]; N + 1];
-        let mut res = vec![];
-        while let Some((pos, time)) = q.pop_front() {
-            if pos == (N, N) {
-                res = time;
-                break;
-            }
-            if visited[pos.0][pos.1] {
-                continue;
-            }
-            visited[pos.0][pos.1] = true;
-            for next in [
-                (pos.0, pos.1 + 1),
-                (pos.0 + 1, pos.1),
-                (pos.0, pos.1.wrapping_sub(1)),
-                (pos.0.wrapping_sub(1), pos.1),
-            ] {
-                if (next.0 <= N) && (next.1 <= N) && !stones[..=t].contains(&(next)) {
-                    let mut tmp = time.clone();
-                    tmp.push(next);
-                    q.push_back((next, tmp));
-                }
-            }
-        }
-        if res.is_empty() {
-            break;
-        }
+    let t = binary_search(&stones);
+    println!("{},{}", stones[t].0, stones[t].1);
+}
 
-        for (dt, test) in stones[t..].iter().enumerate().skip(1){
-            if res.contains(test){
-                t += dt;
-                break;
+fn binary_search(stones: &[(usize, usize)]) -> usize {
+    let mut lind = 1024;
+    let mut hind = stones.len();
+    let mut half = (lind + hind) / 2;
+
+    while lind <= hind {
+        if path(stones, half) {
+            lind = half + 1;
+        } else {
+            hind = half - 1;
+        }
+        half = (hind + lind) / 2;
+    }
+    half + 1
+}
+
+fn path(stones: &[(usize, usize)], t: usize) -> bool {
+    let mut q = VecDeque::new();
+    q.push_back((0, 0));
+    let mut visited = [[false; N + 1]; N + 1];
+    while let Some(pos) = q.pop_front() {
+        if pos == (N, N) {
+            return true;
+        }
+        visited[pos.0][pos.1] = true;
+        for next in [
+            (pos.0, pos.1 + 1),
+            (pos.0 + 1, pos.1),
+            (pos.0, pos.1.wrapping_sub(1)),
+            (pos.0.wrapping_sub(1), pos.1),
+        ] {
+            if (next.0 <= N) && (next.1 <= N) && !stones[..=t].contains(&(next)) && !visited[pos.0][pos.1]{
+                q.push_back(next);
             }
         }
     }
-    println!("{},{}", stones[t].0, stones[t].1);
+    false
 }
