@@ -33,7 +33,7 @@ pub fn star2() {
                 {
                     if (next.0 >= m) || (next.1 >= n) || grid[next.0][next.1] != grid[y][x] {
                         fence[pos.0][pos.1] += 1 << i;
-                    } else {
+                    } else if !visited[next.0][next.1]{
                         q.push(next);
                     }
                 }
