@@ -1,14 +1,16 @@
+use rayon::prelude::*;
 use std::collections::HashMap;
 use std::collections::HashSet;
 
 pub fn star2() {
     let (towels, patterns) = include_str!("data.in").split_once("\n\n").unwrap();
     let towels: HashSet<_> = towels.split(", ").collect();
-    let mut res = 0;
-    let mut map = HashMap::new();
-    for pattern in patterns.trim().lines() {
-        res += feasible(&towels, pattern, 0, &mut map);
-    }
+    let res = patterns
+        .trim()
+        .lines()
+        .par_bridge()
+        .map(|p| feasible(&towels, p, 0, &mut HashMap::new()))
+        .sum::<usize>();
     println!("{}", res);
 }
 
