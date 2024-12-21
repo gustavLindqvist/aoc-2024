@@ -1,7 +1,7 @@
 mod star1;
 mod star2;
 pub fn main() {
-    println! {"20"}
+    println! {"Day 20"}
     println! {"Star 1"}
     star1::star1();
     println! {"Star 2"}
