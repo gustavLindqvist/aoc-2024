@@ -1,25 +1,26 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 pub fn star1() {
-    let mut edges: HashMap<&str, HashSet<&str>> = HashMap::new();
-    for (n1, n2) in include_str!("data.in")
-        .lines()
-        .map(|l| l.split_once("-").unwrap())
-    {
-        edges.entry(n1).or_default().insert(n2);
-        edges.entry(n2).or_default().insert(n1);
+    let mut edges = [[false; 26 * 26]; 26 * 26];
+    let mut nodes = HashSet::new();
+    let data = include_bytes!("data.in");
+    for start in (0..data.len()).step_by(6) {
+        let n1 = hash(&data[start..=(start + 1)]);
+        let n2 = hash(&data[(start + 3)..=(start + 4)]);
+        edges[n1][n2] = true;
+        edges[n2][n1] = true;
+        nodes.insert(n1);
+        nodes.insert(n2);
     }
-    let nodes: Vec<_> = edges.keys().collect();
+    let nodes: Vec<_> = nodes.into_iter().collect();
     let mut res = 0;
-    for n1 in 0..nodes.len() {
-        for n2 in n1..nodes.len() {
-            for n3 in n2..nodes.len() {
-                let e1 = edges.get(nodes[n1]).unwrap();
-                if e1.contains(nodes[n2])
-                    && e1.contains(nodes[n3])
-                    && edges.get(nodes[n2]).unwrap().contains(nodes[n3])
-                && (nodes[n1].starts_with('t')
-                    || nodes[n2].starts_with('t')
-                    || nodes[n3].starts_with('t'))
+    for i1 in 0..nodes.len() {
+        for i2 in i1..nodes.len() {
+            for i3 in i2..nodes.len() {
+                let (n1, n2, n3) = (nodes[i1], nodes[i2], nodes[i3]);
+                if edges[n1][n2]
+                    && edges[n1][n3]
+                    && edges[n2][n3]
+                    && (start_t(n1) || start_t(n2) || start_t(n3))
                 {
                     res += 1;
                 }
@@ -27,4 +28,12 @@ pub fn star1() {
         }
     }
     println!("{}", res);
+}
+
+fn hash(s: &[u8]) -> usize {
+    (s[0] - b'a') as usize * 26 + (s[1] - b'a') as usize
+}
+
+fn start_t(s: usize) -> bool {
+    s / 26 == (b't' - b'a') as usize
 }
